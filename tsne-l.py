@@ -13,11 +13,6 @@
 
 import numpy as Math
 import pylab as Plot
-import plotly.plotly as py
-from plotly.graph_objs import Scatter
-import plotly.tools as tls
-tls.set_credentials_file(username='m0597', api_key='9pjer55x5e')
-from grab import *
 import os, io
 import wikipedia, unicodedata, textrazor
 import csv, json
