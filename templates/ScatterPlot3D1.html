@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.3.9/d3.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.2.0.js"></script>
+  <script src="../dex.js"></script>
+  <script src="../js/dex/component/threejs/ScatterPlot3D.js"></script>
+  <script src="../js/dex/component/d3/ParallelCoordinates.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r61/three.min.js"></script>
+
+  <style type="text/css">
+    body {
+      margin: 0px;
+      padding: 0px;
+    }
+
+    #ScatterPlot3D {
+      display: inline;
+      width: 100%;
+      height: 100%;
+    }
+
+  </style>
+
+  <!-- raf.js -->
+  <script src="http://dexvis.com/three/latest/build/raf.js"></script>
+
+</head>
+
+<body>
+<table border="0">
+  <tr>
+    <td id='parCoord' valign="center">
+      <svg id="ChartArea" height="400" class="chart" width="0"></svg>
+    </td>
+    <td id='scatter3d' valign="center"></td>
+  </tr>
+</table>
+<script type="x-shader/x-vertex" id="vertexshader">
+uniform float amplitude;
+attribute float size;
+attribute vec3 customColor;
+
+varying vec3 vColor;
+
+void main()
+{
+  vColor = customColor;
+  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+  //gl_PointSize = size;
+  gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );
+
+  gl_Position = projectionMatrix * mvPosition;
+}
+
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentshader">
+uniform vec3 color;
+uniform sampler2D texture;
+
+varying vec3 vColor;
+
+void main()
+{
+  gl_FragColor = vec4( color * vColor, 1.0 );
+  gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+}
+
+</script>
+<script>
+
+  //var svg = d3.select("#parCoord")
+  //  .append("svg")
+  //  .attr("width", 800)
+  //  .attr("height",400)
+  //  .append("g")
+  //  .attr("transform", "translate(60,20)");
+
+  $(function(){
+        $.getJSON('http://localhost:8000/data.json',function(data){
+            csv.header = data.headings;
+            csv.data = data.data;
+            csv.labels = data.labels;
+              var scatterplot = new ScatterPlot3D(
+                {
+                  'parent' : scatterParent,
+                  'csv'    : csv,
+                  'height' : 800,
+                  'width'  : 800
+                });
+
+            scatterplot.render();
+            alert(csv.data.length)
+        }).error(function(){
+            console.log('error');
+        });
+    });
+  var scatterParent = document.getElementById('scatter3d');
+  var csv =
+  {
+    'header' : null,
+    'data'   : null,
+    'labels' : null
+  };
+
+
+
+  pcChart.addListener("select", scatterplot, function (chartEvent) {
+    d3.selectAll("canvas").remove();
+    scatterplot.attr('csv', chartEvent.selected).update();
+  });
+
+
+
+</script>
+</body>
+</html>
