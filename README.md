@@ -1,5 +1,5 @@
 # GloVeBox
-##TreeHacks 2016
+##TreeHacks 2016 - Creating data visuals from text.
 
 This app takes a link to a text article as input, and produces a 3D scatter plot of relations between key terms in the text using a word2vec model. The extraction of key terms is done with TextRazor. We are reducing 50-dimensional word vectors into 3-dimensional representations using t-Distributed Stochastic Neighbor Embedding (credit for design and implementation: [Laurens van der Maaten](https://lvdmaaten.github.io/))
 
